@@ -1,12 +1,5 @@
-name: deploy-test
-
 on: 
   workflow_dispatch:
-    inputs:
-      caption:
-        description: "Branch"
-        required: false
-        default: "HELLO WORLD!"
   issue_comment:
     types: [created, edited, deleted]
 

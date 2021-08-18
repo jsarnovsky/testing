@@ -26,7 +26,7 @@ jobs:
         run: echo "I should not run on comment, only manual click"
 
   Comment_Test:
-    if: github.event_name == 'issue_comment' && 
+    if: github.event.issue.pull_request && 
       contains(github.event.comment.body, '/deploybot dev')
     runs-on: ubuntu-latest
     environment: dev

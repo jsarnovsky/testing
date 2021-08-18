@@ -19,7 +19,6 @@ env:
 
 jobs:
   dispatch_test:
-  caption:${{ github.event.inputs.caption }}
     name: Dispatch deploy
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest

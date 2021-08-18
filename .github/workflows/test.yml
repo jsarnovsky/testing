@@ -1,5 +1,9 @@
 on: 
   workflow_dispatch:
+    inputs:
+      caption:
+        description: "Branch"
+        required: false
   issue_comment:
     types: [created, edited, deleted]
 

@@ -2,6 +2,11 @@ name: deploy-test
 
 on: 
   workflow_dispatch:
+    inputs:
+      trigger:
+        description: 'Trigger event'     
+        required: true
+        default: 'manual'
   issue_comment:
     types: [created, edited, deleted]
 
@@ -13,7 +18,17 @@ env:
   IMAGE_TAG: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
+  Trigger:
+    name: Trigger ${{ github.event.inputs.trigger }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show trigger source
+        run: |
+            echo "Trigger source: ${{ github.event.inputs.trigger }}" 
+
   dispatch_test:
+    name: Dispatch deploy
+    needs: Trigger
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: dev
@@ -26,7 +41,9 @@ jobs:
         run: echo "I should not run on comment, only manual click"
 
   Comment_Test:
-    if: github.event_name == 'issue_comment' && 
+    name: Comment depoloy
+    needs: Trigger
+    if: github.event.issue.pull_request && 
       contains(github.event.comment.body, '/deploybot dev')
     runs-on: ubuntu-latest
     environment: dev

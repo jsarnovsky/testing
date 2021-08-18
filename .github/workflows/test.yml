@@ -2,6 +2,11 @@ name: deploy-test
 
 on: 
   workflow_dispatch:
+    inputs:
+      trigger:
+        description: 'Trigger event'     
+        required: true
+        default: 'manual'
   issue_comment:
     types: [created, edited, deleted]
 
@@ -23,6 +28,7 @@ jobs:
 
   dispatch_test:
     name: Dispatch deploy
+    needs: Trigger
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: dev
@@ -36,6 +42,7 @@ jobs:
 
   Comment_Test:
     name: Comment depoloy
+    needs: Trigger
     if: github.event.issue.pull_request && 
       contains(github.event.comment.body, '/deploybot dev')
     runs-on: ubuntu-latest

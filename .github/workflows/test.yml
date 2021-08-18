@@ -13,9 +13,9 @@ env:
   IMAGE_TAG: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
-  Test:
+  dispatch_test:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}
     environment: dev
     steps:
       - name: Check out code
@@ -26,9 +26,9 @@ jobs:
         run: echo "I should not run on comment, only manual click"
 
   Comment_Test:
-    runs-on: ubuntu-latest
     if: github.event_name == 'issue_comment' && 
       contains(github.event.comment.body, '/deploybot dev')
+    runs-on: ubuntu-latest
     environment: dev
     steps:
       - name: Check out code

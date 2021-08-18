@@ -1,9 +1,7 @@
+name: deploy-test
+
 on: 
   workflow_dispatch:
-    inputs:
-      caption:
-        description: "Branch"
-        required: false
   issue_comment:
     types: [created, edited, deleted]
 
@@ -14,3 +12,38 @@ env:
   # For push events, where github.event.pull_request.head.sha is not defined, use github.sha.
   IMAGE_TAG: ${{ github.event.pull_request.head.sha || github.sha }}
 
+jobs:
+  Trigger:
+    name: Trigger ${{ github.event.inputs.trigger }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show trigger source
+        run: |
+            echo "Trigger source: ${{ github.event.inputs.trigger }}" 
+
+  dispatch_test:
+    name: Dispatch deploy
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Check out code
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Test
+        run: echo "I should not run on comment, only manual click"
+
+  Comment_Test:
+    name: Comment depoloy
+    if: github.event.issue.pull_request && 
+      contains(github.event.comment.body, '/deploybot dev')
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Check out code
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Test
+        run: echo "I should only run on comment"
